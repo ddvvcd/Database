@@ -17,14 +17,14 @@ CREATE TABLE `Member` (
 	`depNo`		INT(20) PRIMARY KEY,
 	`name`		CHAR(10),
 	`tel`			CHAR(12)
-	);userdbuserdb
+	);
 	
 	CREATE TABLE `Sales` (
 	`seq`					INT(20) AUTO_INCREMENT PRIMARY KEY,
 	`uid`					CHAR(10),
 	`year`				YEAR(4),
 	`month`				INT(20),
-	`saluserdbe`		INT(20)
+	`sale`				INT(20)
 	);
 	
 	
@@ -87,21 +87,19 @@ INSERT INTO `Sales` VALUES (29, 'a105', 2020, 2, 180000);
 INSERT INTO `Sales` VALUES (30, 'a108', 2020, 2, 76000);
 
 #실습 4-3
-SELECT * FROM `Member` WHERE `name`='김유신'; 
-SELECT * FROM `Member` WHERE `pos`='차장' AND dep=101;
-SELECT * FROM `Member` WHERE `pos`='차장' OR dep=101;
+SELECT * FROM `Member` WHERE `name`='김유신';
+SELECT * FROM `Member` WHERE `pos`='차장' AND `dep`=101;
 SELECT * FROM `Member` WHERE `name` != '김춘추';
 SELECT * FROM `Member` WHERE `name` <> '김춘추';
-SELECT * FROM `Member` WHERE `pos`='사원' OR `pos`='대리';
+SELECT * FROM `Member` WHERE `pos` = '사원' OR `pos` = '대리';
 SELECT * FROM `Member` WHERE `pos` IN('사원', '대리');
-SELECT * FROM `Member` WHERE `dep` IN(101, 102, 103);
 SELECT * FROM `Member` WHERE `name` LIKE '%신';
 SELECT * FROM `Member` WHERE `name` LIKE '김%';
-SELECT * FROM `Member` WHERE `name` LIKE '김_ _';
+SELECT * FROM `Member` WHERE `name` LIKE '김__';
 SELECT * FROM `Member` WHERE `name` LIKE '_성_';
-SELECT * FROM `Member` WHERE `name` LIKE '정_';
+SELECT * FROM `Member` WHERE `name` LIKE '정_'; #'정'으로 시작하는 이름이 2자인 직원*/
 SELECT * FROM `Sales` WHERE `sale` > 50000;
-SELECT * FROM `Sales` WHERE `sale` >= 50000 AND `sale` < 100000 AND `month`=1;
+SELECT * FROM `Sales` WHERE `sale` >= 50000 AND `sale` < 100000 AND `month` = 1; 
 SELECT * FROM `Sales` WHERE `sale` BETWEEN 50000 AND 100000;
 SELECT * FROM `Sales` WHERE `sale` NOT BETWEEN 50000 AND 100000;
 SELECT * FROM `Sales` WHERE `year` IN(2020);
@@ -109,4 +107,131 @@ SELECT * FROM `Sales` WHERE `month` IN(1, 2);
 
 
 
+# 실습 4-4
+SELECT * FROM `Sales` ORDER BY `sale`;
+SELECT * FROM `Sales` ORDER BY `sale` ASC;
+SELECT * FROM `Sales` ORDER BY `sale` DESC;
+SELECT * FROM `Sales` 
+WHERE `sale` > 50000
+ORDER BY `sale` DESC;
 
+SELECT * FROM `Sales` 
+WHERE `sale` > 50000
+ORDER BY
+	`year` 	ASC, 
+	`month`	ASC,
+	`sale` 	DESC;
+
+#실습 4-5 (LIMIT : 레코드 수를 제한해서 조회)
+SELECT * FROM `Sales` LIMIT 3;
+SELECT * FROM `Sales` LIMIT 0, 3; #(start , length) -> (0 부터 3까지) (3개 줄만  출력)
+SELECT * FROM `Sales` LIMIT 1, 2;
+SELECT * FROM `Sales` LIMIT 5, 3;
+SELECT * FROM 
+	`Sales`
+WHERE 
+	`sale` > 50000
+ORDER BY 
+	`year` 	DESC,
+	`month` 	ASC,
+	`sale`	DESC
+LIMIT 
+	5;
+	
+#실습 4-6
+SELECT SUM(`sale`) AS `합계` FROM `Sales`; #합계 구하기
+SELECT AVG(`sale`) FROM `Sales`; #평균 구하기
+SELECT AVG(`sale`) AS `평균` FROM `Sales`; #평균 구하기
+SELECT COUNT(`sale`) AS `갯수` FROM `Sales`; #데이터 갯수 구하기 
+SELECT SUBSTRING(hp, 10, 4) AS '전화번호 끝자리' FROM `Member`;
+#10 : start, 4 : length (출력하려는 갯수)
+
+INSERT INTO `Member`  #NOW() : 현재 날짜 및 현재 시각
+	VALUES ('b101', '을지문덕', '010-5555-1234', '사장', 107, NOW());
+	
+#실습 4-7
+SELECT 
+	SUM(`sale`) AS `총합`
+FROM 
+	`Sales` 
+WHERE 
+	`year` = 2018 AND `month` = 1;
+	
+#실습 4-8
+SELECT 
+		SUM(`sale`) AS `총합`, 
+		AVG(`sale`) AS `평균` 
+FROM `Sales` 
+WHERE 
+		`year` = 2019 
+		AND 
+		`month` = 2 
+		AND
+		`sale` >= 50000;
+
+#실습 4-9
+
+#실습 4-10
+SELECT VERSION();
+SELECT `uid` FROM `Sales` GROUP BY `uid`;		
+SELECT `year` FROM `Sales` GROUP BY `year`;		
+SELECT `uid`, `year` FROM `Sales` GROUP BY `uid`, `year`;			
+SELECT  
+	`uid`, 
+	`year`,
+	SUM(`sale`) AS `합계`
+FROM 
+	`Sales` 
+GROUP BY `uid`, `year`;	
+
+SELECT 
+	`uid`,
+	`year`,
+	SUM(`sale`) AS `합계`
+FROM
+	`Sales`
+WHERE
+	`sale` >= 50000
+GROUP BY
+	`uid`, `year`
+ORDER BY
+	`합계` DESC;
+
+#실습 4-11
+SELECT 
+	`uid`,
+	`year`,
+	SUM(`sale`) AS `합계`
+FROM
+	`Sales`
+WHERE
+	`sale` >= 50000
+GROUP BY
+	`uid`, `year`
+HAVING
+	`합계` >= 200000
+ORDER BY
+	`합계` DESC;
+
+#실습 4-12
+CREATE TABLE `Sales2` LIKE `Sales`;
+INSERT INTO `Sales2` SELECT * FROM `Sales`;
+UPDATE `Sales2` SET `year` = `year` + 3;
+
+#실습 4-13
+SELECT * FROM `Sales`
+UNION	
+SELECT * FROM `Sales2`
+
+(SELECT `uid`, `year`, `sale` FROM `Sales`)
+UNION	
+(SELECT `uid`, `year`, `sale` FROM `Sales2`);
+
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales`
+GROUP BY `uid`, `year`
+UNION
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales2`
+GROUP BY `uid`, `year`
+ORDER BY `year` ASC, `합계` DESC;
