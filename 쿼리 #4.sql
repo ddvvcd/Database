@@ -7,7 +7,7 @@
 CREATE TABLE `Member` (
 	`uid`			VARCHAR(10) PRIMARY KEY,
 	`name`		VARCHAR(10),
-	`hp`			CHAR(13),
+	`hp`			CHAR(13) UNIQUE,
 	`pos`			VARCHAR(10) DEFAULT '사원',
 	`dep`			INT(30) NOT NULL,
 	`rdate`		DATETIME(0)	
@@ -170,6 +170,11 @@ WHERE
 		`sale` >= 50000;
 
 #실습 4-9
+SELECT 
+MIN(`sale`) AS `최저`,
+MAX(`sale`) AS `최고`
+FROM `Sales` 
+WHERE `year` = 2020;
 
 #실습 4-10
 SELECT VERSION();
