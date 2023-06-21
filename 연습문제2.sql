@@ -144,7 +144,9 @@ SELECT * FROM `bank_account` WHERE `a_item_dist` = 'S1'
 ORDER BY `a_balance` DESC
 LIMIT 1;
 
-SELECT * FROM `bank_account`;
+SELECT * FROM `bank_account`
+WHERE `a_balance` = (SELECT MAX(`a_balance`) FROM `bank_account` WHERE `a_item_dist`='S1');
+
 
 
 #실습 2-19 (여러답이 있으니 확인!)
@@ -250,18 +252,18 @@ WHERE `t_dist`=1
 ORDER BY `t_amount` DESC;
 
 #실습 2-30
+#참고 : http://bcadragonfly.tistory.com/8
 SELECT 
-	`t_no`,
-	`a_no`,
+	ANY_VALUE(`t_no`),
+	ANY_VALUE(`a_no`),
 	`c_no`,
-	`t_dist`,
-	`a_item_name`,
-	`c_name`,
-	`t_amount`,
-	`t_datetime`
+	ANY_VALUE(`t_dist`) AS `구분`,
+	ANY_VALUE(`a_item_name`),
+	ANY_VALUE(`c_name`),
+	COUNT(`t_no`) AS `거래건수`
 FROM `bank_transaction` AS a
 JOIN `bank_account` AS b ON a.t_a_no = b.a_no
 JOIN `bank_customer` AS c ON b.a_c_no = c.c_no
-WHERE `t-dist` IN(1, 2) AND `c_dist` = 1
+WHERE `t_dist` IN(1, 2) AND `c_dist` = 1
 GROUP BY `c_no`
 ORDER BY `t_dist`, `거래건수` DESC;
