@@ -267,3 +267,4 @@ JOIN `bank_customer` AS c ON b.a_c_no = c.c_no
 WHERE `t_dist` IN(1, 2) AND `c_dist` = 1
 GROUP BY `c_no`
 ORDER BY `t_dist`, `거래건수` DESC;
+
