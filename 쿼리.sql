@@ -96,4 +96,4 @@ UPDATE `TbiProduct` SET
 								`prdCompany`='삼성',
 								`prdMakeDate` = '2021-01-01'
 								WHERE 
-								`prdCode`=5;
+								`prdCode`=5;ermodel
